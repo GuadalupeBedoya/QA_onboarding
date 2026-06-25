@@ -550,6 +550,7 @@
         </div>
         <div class="tabs" role="tablist">
           <button class="tab active" data-view="dashboard">Dashboard</button>
+          <button class="tab" data-view="qas">QAs</button>
           <button class="tab" data-view="form">Formulario</button>
           <button class="tab" data-view="meetings">Agenda</button>
         </div>
@@ -623,6 +624,33 @@
                 </tr>
               </thead>
               <tbody id="qaTableBody"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section id="qasView" class="hidden">
+        <article class="card section">
+          <div class="section-title">
+            <h3>Todos los QAs agregados</h3>
+            <span id="allQaCountLabel">0 personas</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Correo</th>
+                  <th>Ingreso</th>
+                  <th>Proyecto</th>
+                  <th>Equipo</th>
+                  <th>Líder QA</th>
+                  <th>Estado</th>
+                  <th>Avance</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="allQaTableBody"></tbody>
             </table>
           </div>
         </article>
@@ -943,6 +971,39 @@
       });
     }
 
+    function renderAllQaTable() {
+      $("allQaCountLabel").textContent = `${records.length} persona${records.length === 1 ? "" : "s"}`;
+      $("allQaTableBody").innerHTML = records.length ? records.map((record) => {
+        const status = overallStatus(record);
+        const value = progress(record);
+        return `
+          <tr>
+            <td><strong>${record.name}</strong></td>
+            <td>${record.email || ""}</td>
+            <td>${record.startDate || ""}</td>
+            <td>${record.project || ""}</td>
+            <td>${record.team || ""}</td>
+            <td>${record.lead || ""}</td>
+            <td><span class="pill ${statusClass[status]}">${status}</span></td>
+            <td><div class="progress"><div class="progress-line"><span style="width:${value}%"></span></div><span>${value}%</span></div></td>
+            <td>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="button ghost edit-qa" type="button" data-id="${record.id}">Editar</button>
+                <button class="button danger delete-qa" type="button" data-id="${record.id}">Eliminar</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("") : `<tr><td colspan="9"><div class="empty">Aún no hay QAs agregados</div></td></tr>`;
+
+      document.querySelectorAll(".edit-qa").forEach((button) => {
+        button.addEventListener("click", () => editRecord(button.dataset.id));
+      });
+      document.querySelectorAll(".delete-qa").forEach((button) => {
+        button.addEventListener("click", () => deleteRecord(button.dataset.id, "qas"));
+      });
+    }
+
     function renderMeetings(data) {
       const rows = data.flatMap((record) => topics.map((topic, index) => ({
         id: record.id,
@@ -995,11 +1056,13 @@
       renderProjectChart(data);
       renderDonut(data);
       renderQaTable(data);
+      renderAllQaTable();
       renderMeetings(data);
     }
 
     function setView(view) {
       $("dashboardView").classList.toggle("hidden", view !== "dashboard");
+      $("qasView").classList.toggle("hidden", view !== "qas");
       $("formView").classList.toggle("hidden", view !== "form");
       $("meetingsView").classList.toggle("hidden", view !== "meetings");
       document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab.dataset.view === view));
@@ -1055,6 +1118,14 @@
       };
     }
 
+    function deleteRecord(id, nextView = "dashboard") {
+      records = records.filter((record) => record.id !== id);
+      if (selectedId === id) clearForm();
+      saveRecords();
+      renderAll();
+      setView(nextView);
+    }
+
     function exportCsv() {
       const headers = ["Nombre", "Correo", "Fecha ingreso", "Proyecto", "Equipo", "Líder QA", "Mentor", "Modalidad", "Avance", "Pendientes", ...topics];
       const rows = records.map((record) => [
@@ -1096,11 +1167,7 @@
 
     $("deleteButton").addEventListener("click", () => {
       if (!selectedId) return;
-      records = records.filter((record) => record.id !== selectedId);
-      saveRecords();
-      clearForm();
-      renderAll();
-      setView("dashboard");
+      deleteRecord(selectedId, "dashboard");
     });
 
     $("clearFormButton").addEventListener("click", clearForm);
