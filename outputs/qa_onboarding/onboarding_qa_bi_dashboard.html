@@ -1,0 +1,1133 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BI Onboarding QA</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #657084;
+      --line: #d9e0ea;
+      --panel: #ffffff;
+      --page: #f4f7fb;
+      --navy: #183b63;
+      --blue: #2f6fb2;
+      --teal: #168a8f;
+      --green: #2f8a4d;
+      --amber: #c67a16;
+      --red: #c2483d;
+      --violet: #6a5bb8;
+      --soft-blue: #e8f1fb;
+      --soft-teal: #e4f5f4;
+      --soft-amber: #fff1dc;
+      --soft-green: #e8f4eb;
+      --shadow: 0 10px 30px rgba(23, 32, 51, 0.08);
+      font-family: Inter, Aptos, Segoe UI, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: var(--page);
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      background: #112a47;
+      color: #fff;
+      padding: 24px 20px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 26px;
+    }
+
+    .mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #16a3a8;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .brand span {
+      display: block;
+      color: #bdd0e5;
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .filter-group {
+      margin-bottom: 18px;
+    }
+
+    .filter-group label {
+      display: block;
+      color: #c8d7e8;
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+
+    .sidebar input,
+    .sidebar select {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border-radius: 8px;
+      padding: 10px 11px;
+      outline: none;
+    }
+
+    .sidebar option {
+      color: var(--ink);
+    }
+
+    .sidebar-actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .button {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-weight: 700;
+      color: #fff;
+      background: var(--blue);
+      transition: transform .12s ease, opacity .12s ease;
+    }
+
+    .button:hover { transform: translateY(-1px); }
+    .button.secondary { background: rgba(255, 255, 255, 0.14); }
+    .button.ghost { background: #edf3f8; color: var(--navy); }
+    .button.danger { background: var(--red); }
+
+    main {
+      padding: 24px;
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .headline h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    .headline p {
+      margin: 5px 0 0;
+      color: var(--muted);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      background: #e8eef6;
+      padding: 4px;
+      border-radius: 8px;
+    }
+
+    .tab {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 9px 12px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .tab.active {
+      background: #fff;
+      color: var(--navy);
+      box-shadow: 0 2px 9px rgba(23, 32, 51, .08);
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .kpis {
+      grid-template-columns: repeat(4, minmax(160px, 1fr));
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .kpi {
+      padding: 16px;
+      min-height: 112px;
+      display: grid;
+      align-content: space-between;
+    }
+
+    .kpi .label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .kpi .value {
+      font-size: 30px;
+      font-weight: 800;
+      margin-top: 10px;
+    }
+
+    .kpi small {
+      color: var(--muted);
+    }
+
+    .kpi.teal { border-top: 4px solid var(--teal); }
+    .kpi.blue { border-top: 4px solid var(--blue); }
+    .kpi.amber { border-top: 4px solid var(--amber); }
+    .kpi.green { border-top: 4px solid var(--green); }
+
+    .content-grid {
+      grid-template-columns: minmax(0, 1.3fr) minmax(320px, .7fr);
+      align-items: start;
+    }
+
+    .section {
+      padding: 16px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .section-title h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .section-title span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .chart-row {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr) 46px;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0;
+      font-size: 13px;
+    }
+
+    .bar-track {
+      height: 12px;
+      background: #e9eef5;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 100%;
+      min-width: 3px;
+      background: var(--teal);
+      border-radius: 999px;
+    }
+
+    .donut-wrap {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      align-items: center;
+      gap: 18px;
+      padding-top: 6px;
+    }
+
+    .donut {
+      width: 150px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: conic-gradient(var(--green) 0deg, var(--green) var(--doneDeg), var(--amber) var(--doneDeg), var(--amber) var(--activeDeg), #e8eef6 var(--activeDeg));
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    .donut::after {
+      content: "";
+      width: 88px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: #fff;
+      position: absolute;
+    }
+
+    .donut strong {
+      z-index: 1;
+      font-size: 24px;
+    }
+
+    .legend {
+      display: grid;
+      gap: 8px;
+    }
+
+    .legend div {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+      background: #fff;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #eef4fb;
+      color: var(--navy);
+      text-align: left;
+      font-size: 12px;
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #edf1f6;
+      vertical-align: middle;
+      font-size: 13px;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .progress {
+      display: grid;
+      gap: 5px;
+      min-width: 110px;
+    }
+
+    .progress-line {
+      height: 8px;
+      border-radius: 999px;
+      background: #e9eef5;
+      overflow: hidden;
+    }
+
+    .progress-line span {
+      display: block;
+      height: 100%;
+      background: var(--teal);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .pill.pending { background: #fde8df; color: var(--red); }
+    .pill.scheduled { background: var(--soft-blue); color: var(--blue); }
+    .pill.active { background: var(--soft-amber); color: var(--amber); }
+    .pill.done { background: var(--soft-green); color: var(--green); }
+    .pill.na { background: #eceff4; color: #596273; }
+
+    .qa-row {
+      cursor: pointer;
+    }
+
+    .qa-row:hover td {
+      background: #f7fafc;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+
+    .field textarea {
+      min-height: 72px;
+      resize: vertical;
+    }
+
+    .training-grid {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .training-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 150px;
+      gap: 10px;
+      align-items: center;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfdff;
+    }
+
+    .training-item span {
+      font-size: 13px;
+    }
+
+    .training-item select,
+    .inline-select {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 7px 8px;
+      background: #fff;
+      color: var(--ink);
+      width: 100%;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .empty {
+      padding: 28px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1100px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { position: static; height: auto; }
+      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .content-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      main { padding: 16px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .kpis { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .donut-wrap { grid-template-columns: 1fr; }
+      .training-item { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="mark">QA</div>
+        <div>
+          <h1>Onboarding BI</h1>
+          <span>Seguimiento de ingresos y capacitaciones</span>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label for="searchInput">Buscar</label>
+        <input id="searchInput" type="search" placeholder="Nombre, proyecto o líder">
+      </div>
+
+      <div class="filter-group">
+        <label for="projectFilter">Proyecto</label>
+        <select id="projectFilter"></select>
+      </div>
+
+      <div class="filter-group">
+        <label for="statusFilter">Estado</label>
+        <select id="statusFilter">
+          <option value="Todos">Todos</option>
+          <option value="Pendiente">Pendiente</option>
+          <option value="Agendada">Agendada</option>
+          <option value="En curso">En curso</option>
+          <option value="Completada">Completada</option>
+          <option value="No aplica">No aplica</option>
+        </select>
+      </div>
+
+      <div class="sidebar-actions">
+        <button class="button" id="newQaButton">Nuevo QA</button>
+        <button class="button secondary" id="exportButton">Exportar CSV</button>
+        <button class="button secondary" id="demoButton">Restaurar demo</button>
+      </div>
+    </aside>
+
+    <main>
+      <section class="topbar">
+        <div class="headline">
+          <h2>Tablero de onboarding QA</h2>
+          <p id="periodLabel">Vista general</p>
+        </div>
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-view="dashboard">Dashboard</button>
+          <button class="tab" data-view="form">Formulario</button>
+          <button class="tab" data-view="meetings">Agenda</button>
+        </div>
+      </section>
+
+      <section id="dashboardView">
+        <div class="grid kpis">
+          <article class="card kpi teal">
+            <div class="label">QAs activos</div>
+            <div class="value" id="kpiTotal">0</div>
+            <small id="kpiTotalNote">Sin registros</small>
+          </article>
+          <article class="card kpi blue">
+            <div class="label">Avance promedio</div>
+            <div class="value" id="kpiProgress">0%</div>
+            <small>Capacitaciones completadas</small>
+          </article>
+          <article class="card kpi amber">
+            <div class="label">Reuniones pendientes</div>
+            <div class="value" id="kpiPendingMeetings">0</div>
+            <small>Por agendar o cerrar</small>
+          </article>
+          <article class="card kpi green">
+            <div class="label">Onboardings completos</div>
+            <div class="value" id="kpiDone">0</div>
+            <small>Todos los temas cerrados</small>
+          </article>
+        </div>
+
+        <div class="grid content-grid" style="margin-top:14px">
+          <article class="card section">
+            <div class="section-title">
+              <h3>Avance por proyecto</h3>
+              <span id="projectCountLabel">0 proyectos</span>
+            </div>
+            <div id="projectChart"></div>
+          </article>
+
+          <article class="card section">
+            <div class="section-title">
+              <h3>Distribución de estado</h3>
+              <span>General</span>
+            </div>
+            <div class="donut-wrap">
+              <div class="donut" id="statusDonut" style="--doneDeg:0deg;--activeDeg:0deg"><strong id="donutValue">0%</strong></div>
+              <div class="legend">
+                <div><span class="dot" style="background:var(--green)"></span><span id="legendDone">Completada: 0</span></div>
+                <div><span class="dot" style="background:var(--amber)"></span><span id="legendActive">En curso / agendada: 0</span></div>
+                <div><span class="dot" style="background:#e8eef6"></span><span id="legendPending">Pendiente: 0</span></div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <article class="card section" style="margin-top:14px">
+          <div class="section-title">
+            <h3>Ingresos QA</h3>
+            <span id="tableCountLabel">0 personas</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Ingreso</th>
+                  <th>Proyecto</th>
+                  <th>Líder QA</th>
+                  <th>Estado</th>
+                  <th>Avance</th>
+                  <th>Pendientes</th>
+                </tr>
+              </thead>
+              <tbody id="qaTableBody"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section id="formView" class="hidden">
+        <article class="card section">
+          <div class="section-title">
+            <h3 id="formTitle">Nuevo QA</h3>
+            <span id="selectedHint">Registro editable</span>
+          </div>
+          <form id="qaForm">
+            <div class="form-grid">
+              <div class="field">
+                <label for="name">Nombre completo</label>
+                <input id="name" required>
+              </div>
+              <div class="field">
+                <label for="email">Correo corporativo</label>
+                <input id="email" type="email">
+              </div>
+              <div class="field">
+                <label for="startDate">Fecha de ingreso</label>
+                <input id="startDate" type="date" required>
+              </div>
+              <div class="field">
+                <label for="project">Proyecto</label>
+                <input id="project" required>
+              </div>
+              <div class="field">
+                <label for="team">Equipo / célula</label>
+                <input id="team">
+              </div>
+              <div class="field">
+                <label for="lead">Líder QA</label>
+                <input id="lead">
+              </div>
+              <div class="field">
+                <label for="mentor">Mentor / buddy</label>
+                <input id="mentor">
+              </div>
+              <div class="field">
+                <label for="modality">Modalidad</label>
+                <select id="modality">
+                  <option>Virtual</option>
+                  <option>Presencial</option>
+                  <option>Híbrida</option>
+                </select>
+              </div>
+              <div class="field full">
+                <label for="notes">Observaciones</label>
+                <textarea id="notes"></textarea>
+              </div>
+            </div>
+
+            <div class="section-title" style="margin-top:18px">
+              <h3>Capacitaciones estándar</h3>
+              <span>Cambia el estado de cada tema</span>
+            </div>
+            <div class="training-grid" id="trainingFields"></div>
+
+            <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+              <button class="button" type="submit">Guardar</button>
+              <button class="button ghost" type="button" id="clearFormButton">Limpiar</button>
+              <button class="button danger hidden" type="button" id="deleteButton">Eliminar</button>
+            </div>
+          </form>
+        </article>
+      </section>
+
+      <section id="meetingsView" class="hidden">
+        <article class="card section">
+          <div class="section-title">
+            <h3>Agenda de reuniones y capacitaciones</h3>
+            <span id="meetingCountLabel">0 reuniones</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>QA</th>
+                  <th>Proyecto</th>
+                  <th>Capacitación</th>
+                  <th>Responsable</th>
+                  <th>Fecha</th>
+                  <th>Hora</th>
+                  <th>Modalidad</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="meetingsTableBody"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const topics = [
+      "Introducción a PPM y equipos",
+      "Validar permisos en computador y solicitar accesos",
+      "Historia de la historia - Jira",
+      "Procesos y Estándares de levantamiento de defectos",
+      "Zephyr",
+      "Playwright",
+      "Apidog para pruebas de servicios",
+      "TestSigma",
+      "Logs AWS",
+      "Base de datos y Algolia"
+    ];
+
+    const statuses = ["Pendiente", "Agendada", "En curso", "Completada", "No aplica"];
+    const statusClass = {
+      "Pendiente": "pending",
+      "Agendada": "scheduled",
+      "En curso": "active",
+      "Completada": "done",
+      "No aplica": "na"
+    };
+
+    const demoData = [
+      {
+        id: crypto.randomUUID(),
+        name: "Camila Torres",
+        email: "camila.torres@empresa.com",
+        startDate: "2026-07-01",
+        project: "PPM Core",
+        team: "QA Plataforma",
+        lead: "Laura Méndez",
+        mentor: "Andrés Ríos",
+        modality: "Virtual",
+        notes: "Ingreso inicial a proyecto con foco en regresión.",
+        trainings: {
+          "Introducción a PPM y equipos": "Completada",
+          "Validar permisos en computador y solicitar accesos": "Completada",
+          "Historia de la historia - Jira": "En curso",
+          "Procesos y Estándares de levantamiento de defectos": "Agendada",
+          "Zephyr": "Pendiente",
+          "Playwright": "Pendiente",
+          "Apidog para pruebas de servicios": "Pendiente",
+          "TestSigma": "No aplica",
+          "Logs AWS": "Pendiente",
+          "Base de datos y Algolia": "Pendiente"
+        }
+      },
+      {
+        id: crypto.randomUUID(),
+        name: "Daniel Ruiz",
+        email: "daniel.ruiz@empresa.com",
+        startDate: "2026-07-08",
+        project: "Canales Digitales",
+        team: "QA Automatización",
+        lead: "Mateo Vargas",
+        mentor: "Sofía Pardo",
+        modality: "Híbrida",
+        notes: "Priorizar herramientas de automatización y servicios.",
+        trainings: {
+          "Introducción a PPM y equipos": "Completada",
+          "Validar permisos en computador y solicitar accesos": "Completada",
+          "Historia de la historia - Jira": "Completada",
+          "Procesos y Estándares de levantamiento de defectos": "Completada",
+          "Zephyr": "Completada",
+          "Playwright": "En curso",
+          "Apidog para pruebas de servicios": "Agendada",
+          "TestSigma": "Pendiente",
+          "Logs AWS": "Pendiente",
+          "Base de datos y Algolia": "Pendiente"
+        }
+      }
+    ];
+
+    const storageKey = "qa-onboarding-bi-data";
+    let records = loadRecords();
+    let selectedId = null;
+
+    const $ = (id) => document.getElementById(id);
+
+    function loadRecords() {
+      const saved = localStorage.getItem(storageKey);
+      if (!saved) return structuredClone(demoData);
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return structuredClone(demoData);
+      }
+    }
+
+    function saveRecords() {
+      localStorage.setItem(storageKey, JSON.stringify(records));
+    }
+
+    function blankTrainings() {
+      return Object.fromEntries(topics.map((topic) => [topic, "Pendiente"]));
+    }
+
+    function progress(record) {
+      const activeTopics = topics.filter((topic) => record.trainings[topic] !== "No aplica");
+      if (!activeTopics.length) return 100;
+      const done = activeTopics.filter((topic) => record.trainings[topic] === "Completada").length;
+      return Math.round((done / activeTopics.length) * 100);
+    }
+
+    function overallStatus(record) {
+      const value = progress(record);
+      if (value === 100) return "Completada";
+      if (topics.some((topic) => ["Agendada", "En curso", "Completada"].includes(record.trainings[topic]))) return "En curso";
+      return "Pendiente";
+    }
+
+    function pendingCount(record) {
+      return topics.filter((topic) => record.trainings[topic] === "Pendiente").length;
+    }
+
+    function filteredRecords() {
+      const query = $("searchInput").value.trim().toLowerCase();
+      const project = $("projectFilter").value;
+      const status = $("statusFilter").value;
+      return records.filter((record) => {
+        const text = [record.name, record.project, record.lead, record.team].join(" ").toLowerCase();
+        const matchesSearch = !query || text.includes(query);
+        const matchesProject = project === "Todos" || record.project === project;
+        const matchesStatus = status === "Todos" || overallStatus(record) === status || topics.some((topic) => record.trainings[topic] === status);
+        return matchesSearch && matchesProject && matchesStatus;
+      });
+    }
+
+    function renderProjectFilter() {
+      const projects = ["Todos", ...Array.from(new Set(records.map((record) => record.project).filter(Boolean))).sort()];
+      const current = $("projectFilter").value || "Todos";
+      $("projectFilter").innerHTML = projects.map((project) => `<option ${project === current ? "selected" : ""}>${project}</option>`).join("");
+    }
+
+    function renderTrainingFields(record = null) {
+      const trainings = record?.trainings || blankTrainings();
+      $("trainingFields").innerHTML = topics.map((topic) => `
+        <label class="training-item">
+          <span>${topic}</span>
+          <select data-topic="${topic}">
+            ${statuses.map((status) => `<option value="${status}" ${trainings[topic] === status ? "selected" : ""}>${status}</option>`).join("")}
+          </select>
+        </label>
+      `).join("");
+    }
+
+    function renderKpis(data) {
+      const total = data.length;
+      const average = total ? Math.round(data.reduce((sum, record) => sum + progress(record), 0) / total) : 0;
+      const done = data.filter((record) => progress(record) === 100).length;
+      const pendingMeetings = data.reduce((sum, record) => sum + pendingCount(record), 0);
+      $("kpiTotal").textContent = total;
+      $("kpiTotalNote").textContent = total === 1 ? "1 persona en seguimiento" : `${total} personas en seguimiento`;
+      $("kpiProgress").textContent = `${average}%`;
+      $("kpiPendingMeetings").textContent = pendingMeetings;
+      $("kpiDone").textContent = done;
+      $("periodLabel").textContent = `${total} registro${total === 1 ? "" : "s"} visible${total === 1 ? "" : "s"}`;
+    }
+
+    function renderProjectChart(data) {
+      const groups = new Map();
+      data.forEach((record) => {
+        const item = groups.get(record.project) || { total: 0, sum: 0 };
+        item.total += 1;
+        item.sum += progress(record);
+        groups.set(record.project, item);
+      });
+      const rows = Array.from(groups.entries()).map(([project, item]) => ({
+        project,
+        value: Math.round(item.sum / item.total),
+        total: item.total
+      })).sort((a, b) => b.value - a.value);
+      $("projectCountLabel").textContent = `${rows.length} proyecto${rows.length === 1 ? "" : "s"}`;
+      $("projectChart").innerHTML = rows.length ? rows.map((row) => `
+        <div class="chart-row">
+          <strong>${row.project}</strong>
+          <div class="bar-track"><div class="bar" style="width:${row.value}%"></div></div>
+          <span>${row.value}%</span>
+        </div>
+      `).join("") : `<div class="empty">Sin datos para mostrar</div>`;
+    }
+
+    function renderDonut(data) {
+      const allStatuses = data.flatMap((record) => topics.map((topic) => record.trainings[topic]));
+      const total = allStatuses.length || 1;
+      const done = allStatuses.filter((status) => status === "Completada").length;
+      const active = allStatuses.filter((status) => ["En curso", "Agendada"].includes(status)).length;
+      const pending = allStatuses.filter((status) => status === "Pendiente").length;
+      const doneDeg = Math.round((done / total) * 360);
+      const activeDeg = doneDeg + Math.round((active / total) * 360);
+      $("statusDonut").style.setProperty("--doneDeg", `${doneDeg}deg`);
+      $("statusDonut").style.setProperty("--activeDeg", `${activeDeg}deg`);
+      $("donutValue").textContent = `${Math.round((done / total) * 100)}%`;
+      $("legendDone").textContent = `Completada: ${done}`;
+      $("legendActive").textContent = `En curso / agendada: ${active}`;
+      $("legendPending").textContent = `Pendiente: ${pending}`;
+    }
+
+    function renderQaTable(data) {
+      $("tableCountLabel").textContent = `${data.length} persona${data.length === 1 ? "" : "s"}`;
+      $("qaTableBody").innerHTML = data.length ? data.map((record) => {
+        const status = overallStatus(record);
+        const value = progress(record);
+        return `
+          <tr class="qa-row" data-id="${record.id}">
+            <td><strong>${record.name}</strong><br><span style="color:var(--muted)">${record.email || ""}</span></td>
+            <td>${record.startDate || ""}</td>
+            <td>${record.project || ""}</td>
+            <td>${record.lead || ""}</td>
+            <td><span class="pill ${statusClass[status]}">${status}</span></td>
+            <td><div class="progress"><div class="progress-line"><span style="width:${value}%"></span></div><span>${value}%</span></div></td>
+            <td>${pendingCount(record)}</td>
+          </tr>
+        `;
+      }).join("") : `<tr><td colspan="7"><div class="empty">Sin registros con los filtros actuales</div></td></tr>`;
+
+      document.querySelectorAll(".qa-row").forEach((row) => {
+        row.addEventListener("click", () => editRecord(row.dataset.id));
+      });
+    }
+
+    function renderMeetings(data) {
+      const rows = data.flatMap((record) => topics.map((topic, index) => ({
+        id: record.id,
+        topic,
+        name: record.name,
+        project: record.project,
+        lead: record.lead,
+        modality: record.modality,
+        status: record.trainings[topic],
+        date: record.startDate ? addDays(record.startDate, index + 1) : "",
+        time: index < 5 ? "09:00" : "14:00"
+      })));
+      $("meetingCountLabel").textContent = `${rows.length} reunion${rows.length === 1 ? "" : "es"}`;
+      $("meetingsTableBody").innerHTML = rows.length ? rows.map((row) => `
+        <tr>
+          <td>${row.name}</td>
+          <td>${row.project}</td>
+          <td>${row.topic}</td>
+          <td>${row.lead || ""}</td>
+          <td>${row.date}</td>
+          <td>${row.time}</td>
+          <td>${row.modality || "Virtual"}</td>
+          <td><select class="inline-select meeting-status" data-id="${row.id}" data-topic="${row.topic}">
+            ${statuses.map((status) => `<option value="${status}" ${row.status === status ? "selected" : ""}>${status}</option>`).join("")}
+          </select></td>
+        </tr>
+      `).join("") : `<tr><td colspan="8"><div class="empty">Sin reuniones con los filtros actuales</div></td></tr>`;
+
+      document.querySelectorAll(".meeting-status").forEach((select) => {
+        select.addEventListener("change", () => {
+          const record = records.find((item) => item.id === select.dataset.id);
+          if (!record) return;
+          record.trainings[select.dataset.topic] = select.value;
+          saveRecords();
+          renderAll();
+        });
+      });
+    }
+
+    function addDays(dateText, days) {
+      const date = new Date(`${dateText}T12:00:00`);
+      date.setDate(date.getDate() + days);
+      return date.toISOString().slice(0, 10);
+    }
+
+    function renderAll() {
+      renderProjectFilter();
+      const data = filteredRecords();
+      renderKpis(data);
+      renderProjectChart(data);
+      renderDonut(data);
+      renderQaTable(data);
+      renderMeetings(data);
+    }
+
+    function setView(view) {
+      $("dashboardView").classList.toggle("hidden", view !== "dashboard");
+      $("formView").classList.toggle("hidden", view !== "form");
+      $("meetingsView").classList.toggle("hidden", view !== "meetings");
+      document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab.dataset.view === view));
+    }
+
+    function clearForm() {
+      selectedId = null;
+      $("formTitle").textContent = "Nuevo QA";
+      $("selectedHint").textContent = "Registro editable";
+      $("deleteButton").classList.add("hidden");
+      $("qaForm").reset();
+      $("modality").value = "Virtual";
+      renderTrainingFields();
+    }
+
+    function editRecord(id) {
+      const record = records.find((item) => item.id === id);
+      if (!record) return;
+      selectedId = id;
+      $("formTitle").textContent = record.name;
+      $("selectedHint").textContent = "Editando onboarding";
+      $("deleteButton").classList.remove("hidden");
+      $("name").value = record.name || "";
+      $("email").value = record.email || "";
+      $("startDate").value = record.startDate || "";
+      $("project").value = record.project || "";
+      $("team").value = record.team || "";
+      $("lead").value = record.lead || "";
+      $("mentor").value = record.mentor || "";
+      $("modality").value = record.modality || "Virtual";
+      $("notes").value = record.notes || "";
+      renderTrainingFields(record);
+      setView("form");
+    }
+
+    function collectForm() {
+      const trainings = {};
+      document.querySelectorAll("#trainingFields select").forEach((select) => {
+        trainings[select.dataset.topic] = select.value;
+      });
+      return {
+        id: selectedId || crypto.randomUUID(),
+        name: $("name").value.trim(),
+        email: $("email").value.trim(),
+        startDate: $("startDate").value,
+        project: $("project").value.trim(),
+        team: $("team").value.trim(),
+        lead: $("lead").value.trim(),
+        mentor: $("mentor").value.trim(),
+        modality: $("modality").value,
+        notes: $("notes").value.trim(),
+        trainings
+      };
+    }
+
+    function exportCsv() {
+      const headers = ["Nombre", "Correo", "Fecha ingreso", "Proyecto", "Equipo", "Líder QA", "Mentor", "Modalidad", "Avance", "Pendientes", ...topics];
+      const rows = records.map((record) => [
+        record.name,
+        record.email,
+        record.startDate,
+        record.project,
+        record.team,
+        record.lead,
+        record.mentor,
+        record.modality,
+        `${progress(record)}%`,
+        pendingCount(record),
+        ...topics.map((topic) => record.trainings[topic])
+      ]);
+      const csv = [headers, ...rows].map((row) => row.map((cell) => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "onboarding_qa.csv";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    $("qaForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const record = collectForm();
+      if (selectedId) {
+        records = records.map((item) => item.id === selectedId ? record : item);
+      } else {
+        records.push(record);
+      }
+      saveRecords();
+      clearForm();
+      renderAll();
+      setView("dashboard");
+    });
+
+    $("deleteButton").addEventListener("click", () => {
+      if (!selectedId) return;
+      records = records.filter((record) => record.id !== selectedId);
+      saveRecords();
+      clearForm();
+      renderAll();
+      setView("dashboard");
+    });
+
+    $("clearFormButton").addEventListener("click", clearForm);
+    $("newQaButton").addEventListener("click", () => {
+      clearForm();
+      setView("form");
+    });
+    $("exportButton").addEventListener("click", exportCsv);
+    $("demoButton").addEventListener("click", () => {
+      records = structuredClone(demoData);
+      saveRecords();
+      clearForm();
+      renderAll();
+      setView("dashboard");
+    });
+
+    ["searchInput", "projectFilter", "statusFilter"].forEach((id) => {
+      $(id).addEventListener("input", renderAll);
+      $(id).addEventListener("change", renderAll);
+    });
+
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => setView(tab.dataset.view));
+    });
+
+    clearForm();
+    renderAll();
+  </script>
+</body>
+</html>
