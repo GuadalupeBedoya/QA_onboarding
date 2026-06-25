@@ -127,6 +127,7 @@
       color: #fff;
       background: var(--blue);
       transition: transform .12s ease, opacity .12s ease;
+      min-height: 42px;
     }
 
     .button:hover { transform: translateY(-1px); }
@@ -165,6 +166,7 @@
       background: #e8eef6;
       padding: 4px;
       border-radius: 8px;
+      max-width: 100%;
     }
 
     .tab {
@@ -175,6 +177,7 @@
       padding: 9px 12px;
       cursor: pointer;
       font-weight: 700;
+      white-space: nowrap;
     }
 
     .tab.active {
@@ -487,18 +490,202 @@
 
     @media (max-width: 1100px) {
       .app { grid-template-columns: 1fr; }
-      .sidebar { position: static; height: auto; }
+      .sidebar {
+        position: static;
+        height: auto;
+        display: grid;
+        grid-template-columns: minmax(220px, 1fr) repeat(3, minmax(150px, .7fr));
+        gap: 14px;
+        align-items: end;
+      }
+      .brand,
+      .filter-group,
+      .sidebar-actions {
+        margin: 0;
+      }
+      .sidebar-actions {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-column: 1 / -1;
+      }
       .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .content-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 720px) {
-      main { padding: 16px; }
+      .app {
+        display: block;
+      }
+      .sidebar {
+        display: block;
+        padding: 16px;
+      }
+      .brand {
+        margin-bottom: 16px;
+      }
+      .filter-group {
+        margin-bottom: 12px;
+      }
+      .sidebar-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 9px;
+        margin-top: 16px;
+      }
+      main {
+        padding: 14px;
+        gap: 14px;
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+      main > section {
+        max-width: 100%;
+        min-width: 0;
+        margin-bottom: 14px;
+      }
+      .grid,
+      .card,
+      .topbar {
+        min-width: 0;
+        max-width: 100%;
+      }
       .topbar { align-items: flex-start; flex-direction: column; }
+      .headline h2 {
+        font-size: 20px;
+      }
+      .tabs {
+        width: 100%;
+        overflow-x: auto;
+        scrollbar-width: thin;
+      }
+      .tab {
+        flex: 1 0 auto;
+        text-align: center;
+      }
       .kpis { grid-template-columns: 1fr; }
+      .kpi {
+        min-height: 96px;
+      }
+      .kpi .value {
+        font-size: 26px;
+      }
+      .section {
+        padding: 13px;
+      }
+      .section-title {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .chart-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+        padding: 9px 0;
+      }
+      .chart-row span {
+        justify-self: start;
+      }
       .form-grid { grid-template-columns: 1fr; }
       .donut-wrap { grid-template-columns: 1fr; }
+      .donut {
+        width: min(150px, 58vw);
+      }
       .training-item { grid-template-columns: 1fr; }
+      .table-wrap {
+        overflow: visible;
+        border: 0;
+      }
+      table {
+        min-width: 0;
+      }
+      thead {
+        display: none;
+      }
+      tbody,
+      tr,
+      td {
+        display: block;
+        width: 100%;
+      }
+      tr {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        margin-bottom: 10px;
+        overflow: hidden;
+      }
+      td {
+        border-bottom: 1px solid #edf1f6;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        text-align: right;
+      }
+      td::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        text-align: left;
+        min-width: 96px;
+      }
+      td:first-child {
+        align-items: flex-start;
+      }
+      td:last-child {
+        border-bottom: 0;
+      }
+      td.actions-cell {
+        display: block;
+        text-align: left;
+      }
+      td.actions-cell::before {
+        display: block;
+        margin-bottom: 8px;
+      }
+      .progress {
+        width: min(160px, 44vw);
+        min-width: 120px;
+      }
+      .empty {
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        overflow: visible;
+      }
+      .tab {
+        width: 100%;
+        padding: 9px 8px;
+      }
+      .sidebar input,
+      .sidebar select,
+      .button,
+      .field input,
+      .field select,
+      .field textarea,
+      .training-item select,
+      .inline-select {
+        min-height: 44px;
+      }
+      td {
+        align-items: flex-start;
+        flex-direction: column;
+        text-align: left;
+        gap: 6px;
+      }
+      td::before {
+        min-width: 0;
+      }
+      .progress {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -955,13 +1142,13 @@
         const value = progress(record);
         return `
           <tr class="qa-row" data-id="${record.id}">
-            <td><strong>${record.name}</strong><br><span style="color:var(--muted)">${record.email || ""}</span></td>
-            <td>${record.startDate || ""}</td>
-            <td>${record.project || ""}</td>
-            <td>${record.lead || ""}</td>
-            <td><span class="pill ${statusClass[status]}">${status}</span></td>
-            <td><div class="progress"><div class="progress-line"><span style="width:${value}%"></span></div><span>${value}%</span></div></td>
-            <td>${pendingCount(record)}</td>
+            <td data-label="Nombre"><strong>${record.name}</strong><br><span style="color:var(--muted)">${record.email || ""}</span></td>
+            <td data-label="Ingreso">${record.startDate || ""}</td>
+            <td data-label="Proyecto">${record.project || ""}</td>
+            <td data-label="Líder QA">${record.lead || ""}</td>
+            <td data-label="Estado"><span class="pill ${statusClass[status]}">${status}</span></td>
+            <td data-label="Avance"><div class="progress"><div class="progress-line"><span style="width:${value}%"></span></div><span>${value}%</span></div></td>
+            <td data-label="Pendientes">${pendingCount(record)}</td>
           </tr>
         `;
       }).join("") : `<tr><td colspan="7"><div class="empty">Sin registros con los filtros actuales</div></td></tr>`;
@@ -978,15 +1165,15 @@
         const value = progress(record);
         return `
           <tr>
-            <td><strong>${record.name}</strong></td>
-            <td>${record.email || ""}</td>
-            <td>${record.startDate || ""}</td>
-            <td>${record.project || ""}</td>
-            <td>${record.team || ""}</td>
-            <td>${record.lead || ""}</td>
-            <td><span class="pill ${statusClass[status]}">${status}</span></td>
-            <td><div class="progress"><div class="progress-line"><span style="width:${value}%"></span></div><span>${value}%</span></div></td>
-            <td>
+            <td data-label="Nombre"><strong>${record.name}</strong></td>
+            <td data-label="Correo">${record.email || ""}</td>
+            <td data-label="Ingreso">${record.startDate || ""}</td>
+            <td data-label="Proyecto">${record.project || ""}</td>
+            <td data-label="Equipo">${record.team || ""}</td>
+            <td data-label="Líder QA">${record.lead || ""}</td>
+            <td data-label="Estado"><span class="pill ${statusClass[status]}">${status}</span></td>
+            <td data-label="Avance"><div class="progress"><div class="progress-line"><span style="width:${value}%"></span></div><span>${value}%</span></div></td>
+            <td data-label="Acciones" class="actions-cell">
               <div style="display:flex;gap:8px;flex-wrap:wrap">
                 <button class="button ghost edit-qa" type="button" data-id="${record.id}">Editar</button>
                 <button class="button danger delete-qa" type="button" data-id="${record.id}">Eliminar</button>
@@ -1019,14 +1206,14 @@
       $("meetingCountLabel").textContent = `${rows.length} reunion${rows.length === 1 ? "" : "es"}`;
       $("meetingsTableBody").innerHTML = rows.length ? rows.map((row) => `
         <tr>
-          <td>${row.name}</td>
-          <td>${row.project}</td>
-          <td>${row.topic}</td>
-          <td>${row.lead || ""}</td>
-          <td>${row.date}</td>
-          <td>${row.time}</td>
-          <td>${row.modality || "Virtual"}</td>
-          <td><select class="inline-select meeting-status" data-id="${row.id}" data-topic="${row.topic}">
+          <td data-label="QA">${row.name}</td>
+          <td data-label="Proyecto">${row.project}</td>
+          <td data-label="Capacitación">${row.topic}</td>
+          <td data-label="Responsable">${row.lead || ""}</td>
+          <td data-label="Fecha">${row.date}</td>
+          <td data-label="Hora">${row.time}</td>
+          <td data-label="Modalidad">${row.modality || "Virtual"}</td>
+          <td data-label="Estado"><select class="inline-select meeting-status" data-id="${row.id}" data-topic="${row.topic}">
             ${statuses.map((status) => `<option value="${status}" ${row.status === status ? "selected" : ""}>${status}</option>`).join("")}
           </select></td>
         </tr>
